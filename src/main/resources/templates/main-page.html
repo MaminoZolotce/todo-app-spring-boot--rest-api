@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>ToDo App</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/main-page.css}"/>
+</head>
+<body>
+
+<div class="card">
+
+    <!--HEADER-->
+    <div class="header">
+        <h1>Todo List</h1>
+        <span class="badge">
+            <span th:text="${numberOfActiveRecords}">0</span> active &nbsp;·&nbsp;
+            <span th:text="${numberOfDoneRecords}">0</span> done
+        </span>
+    </div>
+
+    <!--FILTERS-->
+    <form th:action="@{/home}" method="get"
+          th:with="selectedFilter=${#strings.toLowerCase(param.filter != null ? param.filter[0] : 'all')}">
+        <div class="filters">
+
+            <button type="submit" name="filter" value="all"
+                    th:classappend="${selectedFilter != 'active' and selectedFilter != 'done'} ? ' active'"
+                    class="filter-btn">All</button>
+
+            <button type="submit" name="filter" value="active"
+                    th:classappend="${selectedFilter == 'active'} ? ' active'"
+                    class="filter-btn">Active</button>
+
+            <button type="submit" name="filter" value="done"
+                    th:classappend="${selectedFilter == 'done'} ? ' active'"
+                    class="filter-btn">Done</button>
+
+        </div>
+    </form>
+
+    <!--ASK LIST-->
+    <div th:with="selectedFilter=${#strings.toLowerCase(param.filter != null ? param.filter[0] : 'all')}">
+
+
+        <div th:if="${tasks != null and !tasks.isEmpty()}" class="task-list">
+            <div th:each="task, iterStat : ${tasks}"
+                 th:style="'animation-delay:' + ${iterStat.index * 40} + 'ms'"
+                 class="task-item">
+
+                <!--TOGGLE DONE/ACTIVE-->
+                <form th:action="@{/make-task-done}" method="post">
+                    <input type="hidden" name="id"     th:value="${task.id}"/>
+                    <input type="hidden" name="status" th:value="${task.status}"/>
+                    <input type="hidden" name="filter" th:value="${selectedFilter}"/>
+                    <button type="submit"
+                            th:classappend="${task.status.name() == 'DONE'} ? ' checked'"
+                            class="check-btn">
+                        <svg class="check-icon" viewBox="0 0 13 10">
+                            <path d="M1 5l4 4L12 1"/>
+                        </svg>
+                    </button>
+                </form>
+
+
+                <span th:text="${task.title}"
+                      th:classappend="${task.status.name() == 'DONE'} ? ' done'"
+                      class="task-text"></span>
+
+                <!--DELETE-->
+                <form th:action="@{/remove-task}" method="post">
+                    <input type="hidden" name="id"         th:value="${task.id}"/>
+                    <input type="hidden" name="filterMode" th:value="${selectedFilter}"/>
+                    <button type="submit" class="del-btn">×</button>
+                </form>
+
+            </div>
+        </div>
+
+        <!-- Empty state -->
+        <div th:if="${tasks == null or tasks.isEmpty()}" class="task-list">
+            <p class="empty-text"
+               th:text="${selectedFilter == 'active'} ? 'no active tasks yet'
+                       : (${selectedFilter == 'done'}  ? 'no done tasks yet'
+                       : 'no tasks yet — add one below')">
+            </p>
+        </div>
+
+    </div>
+
+    <!--ADD RECORD-->
+    <form th:action="@{/add-task}" method="post" class="add-row">
+        <input class="add-input" name="title" placeholder="what needs to be done..."/>
+        <button type="submit" class="add-btn">Add</button>
+    </form>
+
+</div>
+
+</body>
+</html>
