@@ -15,8 +15,6 @@ public interface TaskRepository extends JpaRepository<Task, Integer> {
     @Query("update Task set status = :status where id = :id")
     void update(int id, TaskStatus status);
 
-    List<Task> findAllByStatus(TaskStatus status);
-    List<Task> findAllByStatusAndTitleContainsOrderByStatusAsc(TaskStatus status, String part);
     int countByStatus(TaskStatus status);
 
 }

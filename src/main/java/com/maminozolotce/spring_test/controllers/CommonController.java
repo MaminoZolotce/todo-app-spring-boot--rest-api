@@ -28,7 +28,7 @@ public class CommonController {
     public String getMainPage(Model model, @RequestParam(name="filter", required = false) String filterMode){
         TaskContainerDto container = taskService.findAllRecords(filterMode);
 
-        model.addAttribute("tasks", container.getRecords());
+        model.addAttribute("tasks", container.getTasks());
         model.addAttribute("numberOfActiveRecords", container.getNumberOfActiveRecords());
         model.addAttribute("numberOfDoneRecords", container.getNumberOfDoneRecords());
         return "main-page";

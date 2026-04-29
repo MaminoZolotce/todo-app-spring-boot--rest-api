@@ -5,6 +5,7 @@ import com.maminozolotce.spring_test.repository.TaskRepository;
 import com.maminozolotce.spring_test.entity.DTO.TaskContainerDto;
 import com.maminozolotce.spring_test.entity.TaskStatus;
 import jakarta.transaction.Transactional;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -15,14 +16,9 @@ import java.util.stream.Collectors;
 
 @Service
 @Transactional
+@AllArgsConstructor
 public class TaskService {
     private final TaskRepository taskRepository;
-
-
-    @Autowired
-    public TaskService(TaskRepository taskRepository) {
-        this.taskRepository = taskRepository;
-    }
 
     public TaskContainerDto findAllRecords(String filterMode){
         List<Task> tasks = taskRepository.findAll(Sort.by(Sort.Direction.ASC, "status"));
